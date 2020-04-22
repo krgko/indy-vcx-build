@@ -4,7 +4,7 @@
 
 source ./env.sh
 
-INDY_VERSION="v1.14.1"
+INDY_VERSION="v1.15.0"
 OUTPUT_DIR=./output
 INDY_SDK_DIR=$OUTPUT_DIR/indy-sdk
 
@@ -14,9 +14,19 @@ build_crypto() {
         git clone https://github.com/x2on/OpenSSL-for-iPhone.git $OUTPUT_DIR/OpenSSL-for-iPhone
     fi
 
-    pushd $OUTPUT_DIR/OpenSSL-for-iPhone
-    ./build-libssl.sh --version=$OPENSSL_VERSION
-    popd
+    if [[ "$OPENSSL_VERSION" == "1.0.2"* ]]; then
+        # Version 1.0.2q does not supported
+        pushd $OUTPUT_DIR/OpenSSL-for-iPhone
+        # Checkout branch which support to build at 1.0.2x
+        git checkout OpenSSL-1.0.2l -f
+        OPENSSL_VERSION=1.0.2i # Test passes at this version
+        ./build-libssl.sh --version=$OPENSSL_VERSION --archs="x86_64 arm64"
+        popd
+    else
+        pushd $OUTPUT_DIR/OpenSSL-for-iPhone
+        ./build-libssl.sh --version=$OPENSSL_VERSION
+        popd
+    fi
 
     # Check there is a fat file libssl.a
     lipo -info $OUTPUT_DIR/OpenSSL-for-iPhone/lib/libssl.a
