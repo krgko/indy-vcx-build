@@ -2,6 +2,8 @@
 
 Libvcx and related library building by bash script divide by arch `X86_64, arm64` for IOS
 
+> Test build at indy-sdk commit 5c91107c59f0628a9529de97f40d652451850ef4
+
 ## ENV configure
 
 Currently, you need to manually select by comment other else for `./env.sh` on `OPENSSL_PATH`
@@ -56,3 +58,9 @@ build_vcx_framework libvcxall
 ```bash
 ./build.sh
 ```
+
+## Troubleshoot Guide
+
+- Error: `error: libzmq.rb: patch does not apply` - Can try to update your home brew `brew install zmq` and remove `./output/libzmq-ios/dist`
+- If rebuild on older version works but newer version does not - Clear all caches and previous vcx build at `./output/indy-sdk`: The newer version might update its dependencies so, rebuild all for new version is a good idea.
+- To prevent and track any issue -> suggest to **uncomment command and run one-by-one**
