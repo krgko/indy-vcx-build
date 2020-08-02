@@ -7,13 +7,21 @@
 #   - sudo xcode-select -s /Applications/Xcode.app
 
 echo "Setup rustup"
-rustup update
-rustup default stable
+rustup update 1.40.0
+rustup default 1.40.0
 rustup component add rls-preview rust-analysis rust-src
 
 echo "Setup rustup target platforms"
-rustup target remove aarch64-linux-android armv7-linux-androideabi arm-linux-androideabi i686-linux-android x86_64-linux-android
-rustup target add aarch64-apple-ios armv7-apple-ios armv7s-apple-ios x86_64-apple-ios i386-apple-ios
+rustup target remove aarch64-linux-android
+rustup target armv7-linux-androideabi
+rustup target arm-linux-androideabi
+rustup target i686-linux-android
+rustup target x86_64-linux-android
+rustup target add aarch64-apple-ios
+rustup target add armv7-apple-ios
+rustup target add armv7s-apple-ios
+rustup target add x86_64-apple-ios
+rustup target add i386-apple-ios
 
 RUST_TARGETS=$(rustc --print target-list | grep -i ios)
 if [ "$RUST_TARGETS" = "" ]; then
@@ -38,7 +46,7 @@ brew update
 
 echo "Install required native libraries and utilities (libsodium is added with URL to homebrew since version<1.0.15 is required)"
 brew install pkg-config
-brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/65effd2b617bade68a8a2c5b39e1c3089cc0e945/Formula/libsodium.rb
+brew install libsodium
 brew install automake
 brew install autoconf
 brew install cmake

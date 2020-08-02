@@ -4,7 +4,7 @@
 
 source ./env.sh
 
-INDY_VERSION="v1.15.0"
+INDY_VERSION="master"
 OUTPUT_DIR=./output
 INDY_SDK_DIR=$OUTPUT_DIR/indy-sdk
 
@@ -56,6 +56,7 @@ build_libzmq() {
     fi
 
     pushd $OUTPUT_DIR/libzmq-ios
+    git checkout -f master # Clear all cache
     git apply ../../patches/libzmq.rb.patch
     ./libzmq.rb
     popd
@@ -105,7 +106,8 @@ checkout_indy_sdk() {
 
     pushd $INDY_SDK_DIR
     git fetch --all
-    git checkout $INDY_VERSION
+    git add * # To remove all previous state by checkout -f
+    git checkout $INDY_VERSION -f
     popd
 }
 
@@ -321,6 +323,9 @@ build_vcx_framework() {
     cp -v ConnectMeVcx.h vcx.framework/Headers
     cp -v include/libvcx.h vcx.framework/Headers
     cp -v vcx/vcx.h vcx.framework/Headers
+    cp -v utils/VcxLogger vcx.framework/Headers
+    cp -v utils/IndySdk.h vcx.framework/Headers
+    cp -v utils/IndyTypes.h vcx.framework/Headers
     if [ -d tmp ]; then
         rm -rf tmp
     fi
@@ -415,4 +420,4 @@ abspath() {
 
 # Build vcx.framework
 # apply_vcx_wrapper_ios_patch
-# build_vcx_framework libvcxall
+build_vcx_framework libvcxall
