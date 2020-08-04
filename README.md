@@ -2,7 +2,7 @@
 
 Libvcx and related library building by bash script divide by arch `X86_64, arm64` for IOS
 
-> Test build at indy-sdk tag 1.15.0
+> Test build at indy-sdk commit b6a168443f60cfc55afc118927b766f3706ae3a3
 
 ## ENV configure
 
@@ -54,6 +54,8 @@ build_vcx_framework libvcxall
 ```
 
 ## Command
+
+Remove output folder if needs clean build
 
 ```bash
 ./build.sh

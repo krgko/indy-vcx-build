@@ -4,7 +4,7 @@
 
 source ./env.sh
 
-INDY_VERSION="master"
+INDY_VERSION=b6a168443f60cfc55afc118927b766f3706ae3a3
 OUTPUT_DIR=./output
 INDY_SDK_DIR=$OUTPUT_DIR/indy-sdk
 
@@ -288,6 +288,7 @@ build_vcx_framework() {
     ARCHS="arm64 x86_64"
 
     cp -v $OUTPUT_DIR/${COMBINED_LIB}.a $INDY_SDK_DIR/vcx/wrappers/ios/vcx/lib/libvcx.a
+    lipo -info $INDY_SDK_DIR/vcx/wrappers/ios/vcx/lib/libvcx.a
 
     pushd $INDY_SDK_DIR/vcx/wrappers/ios/vcx
     rm -rf vcx.framework.previousbuild
@@ -323,9 +324,7 @@ build_vcx_framework() {
     cp -v ConnectMeVcx.h vcx.framework/Headers
     cp -v include/libvcx.h vcx.framework/Headers
     cp -v vcx/vcx.h vcx.framework/Headers
-    cp -v utils/VcxLogger vcx.framework/Headers
-    cp -v utils/IndySdk.h vcx.framework/Headers
-    cp -v utils/IndyTypes.h vcx.framework/Headers
+    cp -v utils/*.h vcx.framework/Headers
     if [ -d tmp ]; then
         rm -rf tmp
     fi
@@ -419,5 +418,4 @@ abspath() {
 
 
 # Build vcx.framework
-# apply_vcx_wrapper_ios_patch
-build_vcx_framework libvcxall
+# build_vcx_framework libvcxall
