@@ -113,15 +113,16 @@ checkout_indy_sdk() {
 }
 
 change_libvcx() {
-    if [ ! -d $OUTPUT_DIR/libvcx ]; then
-        git clone https://github.com/AbsaOSS/libvcx.git $OUTPUT_DIR/libvcx
+    if [ ! -d $OUTPUT_DIR/vcx ]; then
+        git clone https://github.com/AbsaOSS/libvcx.git $OUTPUT_DIR/vcx
     fi
 
-    pushd $OUTPUT_DIR/libvcx
+    pushd $OUTPUT_DIR/vcx
     git fetch --all
     git checkout $VCX_VERSION -f
     popd
-    cp -vRf $OUTPUT_DIR/libvcx $OUTPUT_DIR/indy-sdk/vcx/
+    rm -vRf $OUTPUT_DIR/indy-sdk/vcx
+    cp -vRf $OUTPUT_DIR/vcx $OUTPUT_DIR/indy-sdk/vcx
 }
 
 build_libindy() {

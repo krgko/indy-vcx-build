@@ -7,8 +7,8 @@
 #   - sudo xcode-select -s /Applications/Xcode.app
 
 echo "Setup rustup"
-rustup update 1.40.0
-rustup default 1.40.0
+rustup update 1.42.0
+rustup default 1.42.0
 rustup component add rls-preview rust-analysis rust-src
 
 echo "Setup rustup target platforms"
