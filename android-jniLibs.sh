@@ -9,8 +9,8 @@ jniLibs=${workdir}/jniLibs
 libindy_version=1.15.0
 libvcx_version=0.8.0
 
-master_libindy_version=1.15.0-1563
-master_libvcx_version=0.8.0-1563
+master_libindy_version=1.15.0-1565
+master_libvcx_version=0.8.0-1565
 
 mkdir -p ${jniLibs}/armeabi-v7a
 mkdir -p ${jniLibs}/arm64-v8a
@@ -19,26 +19,26 @@ mkdir -p ${jnadir}
 
 download_prebuilt_libindy(){
     pushd ${workdir}
-    wget -O libindy_android_armv7_${libindy_version}.zip "https://master.sovrin.org/android/libindy/master/${master_libindy_version}/libindy_android_armv7_${libindy_version}.zip"
+    wget -O libindy_android_armv7_${libindy_version}.zip "https://repo.sovrin.org/android/libindy/master/${master_libindy_version}/libindy_android_armv7_${libindy_version}.zip"
     unzip libindy_android_armv7_${libindy_version}.zip
 
-    wget -O libindy_android_arm64_${libindy_version}.zip "https://master.sovrin.org/android/libindy/master/${master_libindy_version}/libindy_android_arm64_${libindy_version}.zip"
+    wget -O libindy_android_arm64_${libindy_version}.zip "https://repo.sovrin.org/android/libindy/master/${master_libindy_version}/libindy_android_arm64_${libindy_version}.zip"
     unzip libindy_android_arm64_${libindy_version}.zip
 
-    wget -O libindy_android_x86_${libindy_version}.zip "https://master.sovrin.org/android/libindy/master/${master_libindy_version}/libindy_android_x86_${libindy_version}.zip"
+    wget -O libindy_android_x86_${libindy_version}.zip "https://repo.sovrin.org/android/libindy/master/${master_libindy_version}/libindy_android_x86_${libindy_version}.zip"
     unzip libindy_android_x86_${libindy_version}.zip
     popd 
 }
 
 download_prebuilt_libvcx(){
     pushd ${workdir}
-    wget -O libvcx_android_armv7_${libvcx_version}.zip "https://master.sovrin.org/android/libvcx/master/${master_libvcx_version}/libvcx_android_armv7_${libvcx_version}.zip"
+    wget -O libvcx_android_armv7_${libvcx_version}.zip "https://repo.sovrin.org/android/libvcx/master/${master_libvcx_version}/libvcx_android_armv7_${libvcx_version}.zip"
     unzip libvcx_android_armv7_${libvcx_version}.zip
 
-    wget -O libvcx_android_arm64_${libvcx_version}.zip "https://master.sovrin.org/android/libvcx/master/${master_libvcx_version}/libvcx_android_arm64_${libvcx_version}.zip"
+    wget -O libvcx_android_arm64_${libvcx_version}.zip "https://repo.sovrin.org/android/libvcx/master/${master_libvcx_version}/libvcx_android_arm64_${libvcx_version}.zip"
     unzip libvcx_android_arm64_${libvcx_version}.zip
 
-    wget -O libvcx_android_x86_${libvcx_version}.zip "https://master.sovrin.org/android/libvcx/master/${master_libvcx_version}/libvcx_android_x86_${libvcx_version}.zip"
+    wget -O libvcx_android_x86_${libvcx_version}.zip "https://repo.sovrin.org/android/libvcx/master/${master_libvcx_version}/libvcx_android_x86_${libvcx_version}.zip"
     unzip libvcx_android_x86_${libvcx_version}.zip
     popd
 }
@@ -86,6 +86,12 @@ copy_native_libraries(){
     popd
 }
 
+zip_jniLibs(){
+    pushd ${workdir}
+    zip -r vcx.android.${master_libvcx_version}.zip jniLibs
+    popd
+}
+
 cleanup(){
     rm -rf output-android
 }
@@ -95,4 +101,5 @@ download_prebuilt_libvcx
 download_ndk
 download_jna
 copy_native_libraries
+zip_jniLibs
 # cleanup

@@ -111,6 +111,14 @@ checkout_indy_sdk() {
     popd
 }
 
+change_libvcx() {
+    if [ ! -d $OUTPUT_DIR/libvcx ]; then
+        git clone https://github.com/AbsaOSS/libvcx.git $OUTPUT_DIR/libvcx
+    fi
+
+    cp -vRf $OUTPUT_DIR/libvcx $OUTPUT_DIR/indy-sdk/vcx/
+}
+
 build_libindy() {
     # OpenSSL-for-iPhone currently provides libs only for aarch64-apple-ios and x86_64-apple-ios, so we select only them.
     TRIPLETS="aarch64-apple-ios,x86_64-apple-ios"
@@ -406,16 +414,15 @@ abspath() {
 
 
 # Build vcx
-# build_libvcx
-# copy_libvcx_architectures
-
+change_libvcx
+build_libvcx
+copy_libvcx_architectures
 
 # Copy libraries to combine
-# copy_libs_tocombine
+copy_libs_tocombine
 
 # Combine libs by arch and merge libs to single fat binary
-# combine_libs libvcxall
-
+combine_libs libvcxall
 
 # Build vcx.framework
-# build_vcx_framework libvcxall
+build_vcx_framework libvcxall
