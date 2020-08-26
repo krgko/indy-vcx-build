@@ -4,9 +4,10 @@
 
 source ./env.sh
 
-INDY_VERSION=b6a168443f60cfc55afc118927b766f3706ae3a3
+INDY_VERSION=master
 OUTPUT_DIR=./output
 INDY_SDK_DIR=$OUTPUT_DIR/indy-sdk
+VCX_VERSION=0.9.1
 
 # Build libssl and libcrypto
 build_crypto() {
@@ -116,6 +117,10 @@ change_libvcx() {
         git clone https://github.com/AbsaOSS/libvcx.git $OUTPUT_DIR/libvcx
     fi
 
+    pushd $OUTPUT_DIR/libvcx
+    git fetch --all
+    git checkout $VCX_VERSION -f
+    popd
     cp -vRf $OUTPUT_DIR/libvcx $OUTPUT_DIR/indy-sdk/vcx/
 }
 
@@ -406,23 +411,21 @@ abspath() {
 # extract_architectures output/OpenSSL-for-iPhone/lib/libssl.a libssl openssl
 # extract_architectures output/OpenSSL-for-iPhone/lib/libcrypto.a libcrypto openssl
 
-
 # Build libindy
 # checkout_indy_sdk
 # build_libindy
 # copy_libindy_architectures
 
-
 # Build vcx
-change_libvcx
-build_libvcx
-copy_libvcx_architectures
+# change_libvcx
+# build_libvcx
+# copy_libvcx_architectures
 
 # Copy libraries to combine
-copy_libs_tocombine
+# copy_libs_tocombine
 
 # Combine libs by arch and merge libs to single fat binary
-combine_libs libvcxall
+# combine_libs libvcxall
 
 # Build vcx.framework
-build_vcx_framework libvcxall
+# build_vcx_framework libvcxall
