@@ -353,9 +353,13 @@ build_vcx_framework() {
 }
 
 apply_vcx_wrapper_ios_patch() {
-    pushd $INDY_SDK_DIR
-    git apply ../../patches/vcx-wrapper-ios.patch
+    pushd $OUTPUT_DIR/vcx
+    git apply ../../patches/vcx-wrapper-ios-delete-cred.patch
     popd
+
+    cp -v $OUTPUT_DIR/vcx/wrappers/ios/vcx/ConnectMeVcx.h $INDY_SDK_DIR/vcx/wrappers/ios/vcx/ConnectMeVcx.h
+    cp -v $OUTPUT_DIR/vcx/wrappers/ios/vcx/ConnectMeVcx.m $INDY_SDK_DIR/vcx/wrappers/ios/vcx/ConnectMeVcx.m
+    cp -v $OUTPUT_DIR/vcx/wrappers/ios/vcx/include/libvcx.h $INDY_SDK_DIR/vcx/wrappers/ios/vcx/include/libvcx.h
 }
 
 generate_flags() {
@@ -429,4 +433,5 @@ abspath() {
 # combine_libs libvcxall
 
 # Build vcx.framework
+# apply_vcx_wrapper_ios_patch # This would work only first time
 # build_vcx_framework libvcxall

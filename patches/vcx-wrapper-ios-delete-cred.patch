@@ -1,0 +1,55 @@
+diff --git a/wrappers/ios/vcx/ConnectMeVcx.h b/wrappers/ios/vcx/ConnectMeVcx.h
+index affbf3be8..43d8f1d35 100644
+--- a/wrappers/ios/vcx/ConnectMeVcx.h
++++ b/wrappers/ios/vcx/ConnectMeVcx.h
+@@ -167,6 +167,9 @@ extern void VcxWrapperCommonNumberStringCallback(vcx_command_handle_t xcommand_h
+ 
+ - (int)credentialRelease:(NSInteger) credentialHandle;
+ 
++- (void)deleteCredential:(NSInteger)credentialHandle
++                  completion:(void (^)(NSError *error))completion;
++
+ - (void)exportWallet:(NSString *)exportPath
+          encryptWith:(NSString *)encryptionKey
+           completion:(void (^)(NSError *error, NSInteger exportHandle))completion;
+diff --git a/wrappers/ios/vcx/ConnectMeVcx.m b/wrappers/ios/vcx/ConnectMeVcx.m
+index db6174b73..29cfc61df 100644
+--- a/wrappers/ios/vcx/ConnectMeVcx.m
++++ b/wrappers/ios/vcx/ConnectMeVcx.m
+@@ -796,6 +796,22 @@ void VcxWrapperCommonNumberStringCallback(vcx_command_handle_t xcommand_handle,
+     return vcx_credential_release(credentialHandle);
+ }
+ 
++
++- (void)deleteCredential:(NSInteger)credentialHandle
++          completion:(void (^)(NSError *error))completion
++{
++    vcx_command_handle_t handle= [[VcxCallbacks sharedInstance] createCommandHandleFor:completion];
++    vcx_error_t ret = vcx_delete_credential(handle, credentialHandle, VcxWrapperCommonCallback);
++    if( ret != 0 )
++    {
++        [[VcxCallbacks sharedInstance] deleteCommandHandleFor: handle];
++
++        dispatch_async(dispatch_get_main_queue(), ^{
++            completion([NSError errorFromVcxError: ret]);
++        });
++    }
++}
++
+ - (void)exportWallet:(NSString *)exportPath
+             encryptWith:(NSString *)encryptionKey
+            completion:(void (^)(NSError *error, NSInteger exportHandle))completion {
+diff --git a/wrappers/ios/vcx/include/libvcx.h b/wrappers/ios/vcx/include/libvcx.h
+index 3fa53895f..64d8a5e9a 100644
+--- a/wrappers/ios/vcx/include/libvcx.h
++++ b/wrappers/ios/vcx/include/libvcx.h
+@@ -358,6 +358,9 @@ vcx_error_t vcx_credential_deserialize(vcx_command_handle_t, const char *seriali
+ /** Releases the credential from memory. */
+ vcx_error_t vcx_credential_release(vcx_credential_handle_t credential_handle);
+ 
++/** Delete the credential from the wallet. */
++vcx_error_t vcx_delete_credential(vcx_command_handle_t command_handle, vcx_credential_handle_t credential_handle, void (*cb)(vcx_command_handle_t xcommand_handle, vcx_error_t err));
++
+ /**
+  * wallet object
+  *
