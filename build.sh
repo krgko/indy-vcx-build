@@ -4,10 +4,10 @@
 
 source ./env.sh
 
-INDY_VERSION=master
+INDY_VERSION=v1.15.0
 OUTPUT_DIR=./output
 INDY_SDK_DIR=$OUTPUT_DIR/indy-sdk
-VCX_VERSION=0.9.1
+VCX_VERSION=master
 
 # Build libssl and libcrypto
 build_crypto() {
@@ -109,20 +109,23 @@ checkout_indy_sdk() {
     git fetch --all
     git add * # To remove all previous state by checkout -f
     git checkout $INDY_VERSION -f
+    git pull origin $INDY_VERSION
     popd
 }
 
 change_libvcx() {
-    if [ ! -d $OUTPUT_DIR/vcx ]; then
-        git clone https://github.com/AbsaOSS/libvcx.git $OUTPUT_DIR/vcx
+    if [ ! -d $OUTPUT_DIR/libvcx ]; then
+        git clone https://github.com/AbsaOSS/libvcx.git $OUTPUT_DIR/libvcx
     fi
 
-    pushd $OUTPUT_DIR/vcx
+    pushd $OUTPUT_DIR/libvcx
     git fetch --all
+    git add *
     git checkout $VCX_VERSION -f
+    git pull origin $VCX_VERSION
     popd
     rm -vRf $OUTPUT_DIR/indy-sdk/vcx
-    cp -vRf $OUTPUT_DIR/vcx $OUTPUT_DIR/indy-sdk/vcx
+    cp -vRf $OUTPUT_DIR/libvcx $OUTPUT_DIR/indy-sdk/vcx
 }
 
 build_libindy() {
@@ -322,7 +325,7 @@ build_vcx_framework() {
             exit 1
         fi
 
-        xcodebuild -project vcx.xcodeproj -scheme vcx -configuration Debug -arch ${ARCH} -sdk ${IPHONE_SDK} CONFIGURATION_BUILD_DIR=. build
+        xcodebuild -project vcx.xcodeproj -scheme vcx -configuration Release -arch ${ARCH} -sdk ${IPHONE_SDK} CONFIGURATION_BUILD_DIR=. build
 
         if [ -d "./vcx.framework.previousbuild" ]; then
             lipo -create -output combined.ios.vcx vcx.framework/vcx vcx.framework.previousbuild/vcx
@@ -342,24 +345,36 @@ build_vcx_framework() {
     if [ -d tmp ]; then
         rm -rf tmp
     fi
+
     mkdir -p tmp/vcx/
     cp -rvp vcx.framework tmp/vcx/
     cd tmp
-
     zip -r vcx.${COMBINED_LIB}_${DATETIME}_universal.zip vcx
+    cd -
+
+    # Extract by device arm64
+    mkdir -p tmp/devices/vcx/
+    cp -rvp vcx.framework tmp/devices/vcx
+    cd tmp
+    lipo -extract arm64 devices/vcx/vcx.framework/vcx -o devices/vcx/vcx.framework/vcx
+    zip -r vcx.${DATETIME}_arm64.zip devices/vcx
+    cd -
+    
     popd
 
     cp $INDY_SDK_DIR/vcx/wrappers/ios/vcx/tmp/vcx.${COMBINED_LIB}_${DATETIME}_universal.zip $OUTPUT_DIR/
+    cp $INDY_SDK_DIR/vcx/wrappers/ios/vcx/tmp/vcx.${DATETIME}_arm64.zip $OUTPUT_DIR/
 }
 
 apply_vcx_wrapper_ios_patch() {
-    pushd $OUTPUT_DIR/vcx
-    git apply ../../patches/vcx-wrapper-ios-delete-cred.patch
+    pushd $OUTPUT_DIR/libvcx
+    echo "apply patches ..."
+    # git apply ../../patches/vcx-v2-credential-update-state.patch
     popd
 
-    cp -v $OUTPUT_DIR/vcx/wrappers/ios/vcx/ConnectMeVcx.h $INDY_SDK_DIR/vcx/wrappers/ios/vcx/ConnectMeVcx.h
-    cp -v $OUTPUT_DIR/vcx/wrappers/ios/vcx/ConnectMeVcx.m $INDY_SDK_DIR/vcx/wrappers/ios/vcx/ConnectMeVcx.m
-    cp -v $OUTPUT_DIR/vcx/wrappers/ios/vcx/include/libvcx.h $INDY_SDK_DIR/vcx/wrappers/ios/vcx/include/libvcx.h
+    cp -v $OUTPUT_DIR/libvcx/wrappers/ios/vcx/ConnectMeVcx.h $INDY_SDK_DIR/vcx/wrappers/ios/vcx/ConnectMeVcx.h
+    cp -v $OUTPUT_DIR/libvcx/wrappers/ios/vcx/ConnectMeVcx.m $INDY_SDK_DIR/vcx/wrappers/ios/vcx/ConnectMeVcx.m
+    cp -v $OUTPUT_DIR/libvcx/wrappers/ios/vcx/include/libvcx.h $INDY_SDK_DIR/vcx/wrappers/ios/vcx/include/libvcx.h
 }
 
 generate_flags() {
