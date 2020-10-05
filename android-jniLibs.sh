@@ -9,8 +9,8 @@ jniLibs=${workdir}/jniLibs
 libindy_version=1.15.0
 libvcx_version=0.8.0
 
-master_libindy_version=1.15.0-1565
-master_libvcx_version=0.8.0-1565
+master_libindy_version=1.15.0
+master_libvcx_version=0.8.0
 
 mkdir -p ${jniLibs}/armeabi-v7a
 mkdir -p ${jniLibs}/arm64-v8a
@@ -47,10 +47,10 @@ download_ndk(){
     pushd ${workdir}
     if [ "$(uname)" == "Darwin" ]; then
         echo "Downloading NDK for macOS"
-        wget -O ndk_r21b.zip "https://dl.google.com/android/mastersitory/android-ndk-r21b-darwin-x86_64.zip"
+        wget -O ndk_r21b.zip "https://dl.google.com/android/repository/android-ndk-r21d-darwin-x86_64.zip"
     elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
         echo "Downloading NDK for Linux"
-        wget -O ndk_r21b.zip "https://dl.google.com/android/mastersitory/android-ndk-r21b-linux-x86_64.zip"
+        wget -O ndk_r21b.zip "https://dl.google.com/android/repository/android-ndk-r21b-linux-x86_64.zip"
     fi
     unzip ndk_r21b.zip
     popd 
@@ -74,9 +74,9 @@ copy_native_libraries(){
     cp libvcx_arm64/lib/libvcx.so jniLibs/arm64-v8a/
     cp libvcx_x86/lib/libvcx.so jniLibs/x86/
 
-    cp android-ndk-r21b/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_shared.so jniLibs/armeabi-v7a/
-    cp android-ndk-r21b/sources/cxx-stl/llvm-libc++/libs/arm64-v8a/libc++_shared.so jniLibs/arm64-v8a/
-    cp android-ndk-r21b/sources/cxx-stl/llvm-libc++/libs/x86/libc++_shared.so jniLibs/x86/
+    cp android-ndk-r21d/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_shared.so jniLibs/armeabi-v7a/
+    cp android-ndk-r21d/sources/cxx-stl/llvm-libc++/libs/arm64-v8a/libc++_shared.so jniLibs/arm64-v8a/
+    cp android-ndk-r21d/sources/cxx-stl/llvm-libc++/libs/x86/libc++_shared.so jniLibs/x86/
 
     unzip jna/jna-android-armv7.jar libjnidispatch.so -d jniLibs/armeabi-v7a/
     unzip jna/jna-android-arm64.jar libjnidispatch.so -d jniLibs/arm64-v8a/
@@ -89,6 +89,7 @@ copy_native_libraries(){
 zip_jniLibs(){
     pushd ${workdir}
     zip -r vcx.android.${master_libvcx_version}.zip jniLibs
+    cp vcx.android.${master_libvcx_version}.zip ../
     popd
 }
 
@@ -102,4 +103,4 @@ download_ndk
 download_jna
 copy_native_libraries
 zip_jniLibs
-# cleanup
+cleanup
